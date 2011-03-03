@@ -5,10 +5,13 @@
 
 package DAO;
 
+import Entities.Kunde;
+import java.util.ArrayList;
+
 /**
  *
  * @author georg
  */
 public interface KundenDAO {
-    public void getKunden();
+    public ArrayList<Kunde> getKunden();
 }

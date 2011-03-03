@@ -6,11 +6,13 @@
 package DAO.DerbyDAO;
 
 import DAO.KundenDAO;
+import Entities.Kunde;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,25 +21,22 @@ import java.util.logging.Logger;
  * @author georg
  */
 public class DerbyKundenDAO implements KundenDAO{
-    public void getKunden() {
+    public ArrayList<Kunde> getKunden() {
         try {
-            DerbyQueryInterface i = new getKundenQuery();
-            ResultSet rs = i.executeQuery();
-            while (rs.next()) {
-                System.out.println(rs.getInt("ID") + " " + rs.getString("Name"));
+            Connection db = DerbyDAOFactory.getConnection();
+            PreparedStatement ps = db.prepareStatement("SELECT * FROM Kunden");
+            ResultSet rs = ps.executeQuery();
+
+            ArrayList<Kunde> kunden = new ArrayList<Kunde>();
+
+            while(rs.next()){
+                kunden.add(new Kunde(rs.getInt("ID"), rs.getString("Name")));
             }
+
+            return kunden;
         } catch (SQLException ex) {
             Logger.getLogger(DerbyKundenDAO.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-
-
-    }
-
-    private static final class getKundenQuery extends DerbyQueryTemplate{
-        @Override
-        public void executeSQL() {
-            QueryString = "SELECT * FROM Kunden";
-        }
-
     }
 }

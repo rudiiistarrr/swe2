@@ -10,8 +10,13 @@ package Entities;
  * @author georg
  */
 public class Kunde {
-    private Integer ID;
+    private int ID;
     private String Name;
+
+    public Kunde(int ID, String Name){
+        this.ID = ID;
+        this.Name = Name;
+    }
 
     /**
      * @return the ID
@@ -25,6 +30,13 @@ public class Kunde {
      */
     public String getName() {
         return Name;
+    }
+
+    /**
+     * @param Name the Name to set
+     */
+    public void setName(String Name) {
+        this.Name = Name;
     }
 
 

@@ -5,8 +5,11 @@
 
 package swe_2;
 
+import GUI.MainFrame;
 import DAO.KundenDAO;
 import DAO.DAOFactory;
+import Entities.Kunde;
+import java.util.ArrayList;
 
 /**
  *
@@ -20,11 +23,13 @@ public class Main {
     public static void main(String[] args) {
         DAOFactory dao = DAOFactory.getDAOFactory(DAOFactory.DERBY);
         KundenDAO kundendao = dao.getKundenDAO();
-        kundendao.getKunden();
-        kundendao.getKunden();
-        kundendao.getKunden();
+        ArrayList<Kunde> k = kundendao.getKunden();
+        for(Kunde i : k){
+            System.out.println(i.getID() + " " + i.getName());
+        }
 
-        
+        MainFrame.main(null);
+
 
     }
 
