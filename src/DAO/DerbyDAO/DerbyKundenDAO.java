@@ -54,26 +54,22 @@ public class DerbyKundenDAO implements KundenDAO{
     }
 
     public int updateKunde(Kunde k){
-        Connection db = null;
-        PreparedStatement ps = null;
+        if(k.isChanged()){
+            Connection db = null;
+            PreparedStatement ps = null;
 
-        db = DerbyDAOFactory.getConnection();
-        try {
-            ps = db.prepareStatement("UPDATE Kunden SET Name = ? WHERE ID = ?");
-
-        } catch (SQLException ex) {
-            Logger.getLogger(DerbyKundenDAO.class.getName()).log(Level.SEVERE, null, ex);
+            db = DerbyDAOFactory.getConnection();
+            try {
+                ps = db.prepareStatement("UPDATE Kunden SET Name = ? WHERE ID = ?");
+                ps.setString(1, k.getName());
+                ps.setInt(2, k.getID());
+                int rowsChanged =  ps.executeUpdate();
+                k.setIsChanged(false);
+                return rowsChanged;
+            } catch (SQLException ex) {
+                Logger.getLogger(DerbyKundenDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-
-        return 0;
-    }
-    public int updateKunden(ArrayList<Kunde> kunden){
-
-        return 0;
-    }
-
-    public int updateKunde(Kunde k){
-
         return 0;
     }
 
@@ -81,9 +77,47 @@ public class DerbyKundenDAO implements KundenDAO{
         int rowsUpdated = 0;
 
         for(Kunde k : kunden){
-            rowsUpdated += updateKunde(k);
+            if(k.getID() == -1){
+                rowsUpdated += addKunde(k.getName());
+            }else if(k.isChanged()){
+                rowsUpdated += updateKunde(k);
+            }
         }
 
         return rowsUpdated;
+    }
+
+    public int deleteKunde(Kunde k) {
+            Connection db = null;
+            PreparedStatement ps = null;
+
+            db = DerbyDAOFactory.getConnection();
+            try {
+                ps = db.prepareStatement("DELETE FROM Kunden WHERE ID = ?");
+                ps.setInt(1, k.getID());
+                int rowsChanged =  ps.executeUpdate();
+
+                return rowsChanged;
+            } catch (SQLException ex) {
+                Logger.getLogger(DerbyKundenDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return 0;
+    }
+
+    public int addKunde(String name) {
+            Connection db = null;
+            PreparedStatement ps = null;
+
+            db = DerbyDAOFactory.getConnection();
+            try {
+                ps = db.prepareStatement("INSERT INTO Kunden (\"NAME\") VALUES (?)");
+                ps.setString(1, name);
+                int rowsChanged =  ps.executeUpdate();
+
+                return rowsChanged;
+            } catch (SQLException ex) {
+                Logger.getLogger(DerbyKundenDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return 0;
     }
 }

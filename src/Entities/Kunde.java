@@ -38,7 +38,21 @@ public class Kunde {
      */
     public void setName(String Name) {
         this.Name = Name;
-        this.isChanged = true;
+        this.setIsChanged(true);
+    }
+
+    /**
+     * @return the isChanged
+     */
+    public boolean isChanged() {
+        return isChanged;
+    }
+
+    /**
+     * @param isChanged the isChanged to set
+     */
+    public void setIsChanged(boolean isChanged) {
+        this.isChanged = isChanged;
     }
 
 

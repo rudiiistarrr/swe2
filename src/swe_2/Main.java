@@ -21,13 +21,6 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        DAOFactory dao = DAOFactory.getDAOFactory(DAOFactory.DERBY);
-        KundenDAO kundendao = dao.getKundenDAO();
-        ArrayList<Kunde> k = kundendao.getKunden();
-        for(Kunde i : k){
-            System.out.println(i.getID() + " " + i.getName());
-        }
-
         MainFrame.main(null);
 
 

@@ -14,4 +14,8 @@ import java.util.ArrayList;
  */
 public interface KundenDAO {
     public ArrayList<Kunde> getKunden();
+    public int updateKunden(ArrayList<Kunde> kunden);
+    public int updateKunde(Kunde k);
+    public int deleteKunde(Kunde k);
+    public int addKunde(String Name);
 }

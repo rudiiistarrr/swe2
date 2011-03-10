@@ -14,7 +14,10 @@ import DAO.DAOFactory;
 import DAO.KundenDAO;
 import Entities.Kunde;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 /**
@@ -22,13 +25,10 @@ import javax.swing.table.TableModel;
  * @author georg
  */
 public class KundenPanel extends javax.swing.JPanel {
-    TableModel dataModel = new dataModel();
+    dataModel dataModel = new dataModel();
     private ArrayList<Kunde> kunden;
     
     private class dataModel extends AbstractTableModel {
-
-        
-
         public dataModel() {
             DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.DERBY);
             KundenDAO kd = df.getKundenDAO();
@@ -47,7 +47,7 @@ public class KundenPanel extends javax.swing.JPanel {
             Kunde k = kunden.get(rowIndex);
             switch (columnIndex) {
                 case 0:
-                    return k.getID();
+                    return k.getID() == -1 ? "neu" : k.getID();
                 case 1:
                     return k.getName();
                 default:
@@ -87,12 +87,20 @@ public class KundenPanel extends javax.swing.JPanel {
                     break;
             }
         }
+
+        public void addRow(){
+            int rowIndex = kunden.size();
+            kunden.add(new Kunde(-1, ""));
+            fireTableChanged(new TableModelEvent(this, rowIndex, rowIndex, -1, TableModelEvent.INSERT));
+        }
         
     }
 
     /** Creates new form KundenPanel */
     public KundenPanel() {
         initComponents();
+        DefaultTableModel x;
+
     }
 
     /** This method is called from within the constructor to
@@ -109,6 +117,8 @@ public class KundenPanel extends javax.swing.JPanel {
         jTable1 = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -118,42 +128,100 @@ public class KundenPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.gridheight = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         add(jScrollPane1, gridBagConstraints);
 
-        jButton2.setText("Abbrechen");
+        jButton2.setIcon(new javax.swing.ImageIcon("/home/georg/NetBeansProjects/SWE_2/src/GUI/Undo.png")); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 3;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         add(jButton2, gridBagConstraints);
 
-        jButton1.setText("Speichern");
+        jButton1.setIcon(new javax.swing.ImageIcon("/home/georg/NetBeansProjects/SWE_2/src/GUI/Save.png")); // NOI18N
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHEAST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
         add(jButton1, gridBagConstraints);
+
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Delete-icon.png"))); // NOI18N
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        add(jButton3, gridBagConstraints);
+
+        jButton4.setIcon(new javax.swing.ImageIcon("/home/georg/NetBeansProjects/SWE_2/src/GUI/Add.png")); // NOI18N
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        add(jButton4, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.DERBY);
+        KundenDAO kd = df.getKundenDAO();
+        
+        JOptionPane.showMessageDialog(this, "Updated " + kd.updateKunden(kunden)  + " Rows");
+
+        dataModel = new dataModel();
+        jTable1.setModel(dataModel);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.DERBY);
+        KundenDAO kd = df.getKundenDAO();
+
+        int rowIndex = jTable1.getSelectedRow();
+        if(rowIndex != -1){
+            kd.deleteKunde(kunden.get(rowIndex));
+            kunden.remove(rowIndex);
+        }
+
+        jTable1.updateUI();
+        jTable1.repaint();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        dataModel = new dataModel();
+        jTable1.setModel(dataModel);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        dataModel.addRow();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
