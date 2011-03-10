@@ -22,10 +22,14 @@ import java.util.logging.Logger;
  */
 public class DerbyKundenDAO implements KundenDAO{
     public ArrayList<Kunde> getKunden() {
+        Connection db = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
         try {
-            Connection db = DerbyDAOFactory.getConnection();
-            PreparedStatement ps = db.prepareStatement("SELECT * FROM Kunden");
-            ResultSet rs = ps.executeQuery();
+            db = DerbyDAOFactory.getConnection();
+            ps = db.prepareStatement("SELECT * FROM Kunden");
+            rs = ps.executeQuery();
 
             ArrayList<Kunde> kunden = new ArrayList<Kunde>();
 
@@ -37,7 +41,35 @@ public class DerbyKundenDAO implements KundenDAO{
         } catch (SQLException ex) {
             Logger.getLogger(DerbyKundenDAO.class.getName()).log(Level.SEVERE, null, ex);
             return null;
+        } finally {
+            try {
+                rs.close();
+                ps.close();
+                db.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(DerbyKundenDAO.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         }
+    }
+
+    public int updateKunde(Kunde k){
+        Connection db = null;
+        PreparedStatement ps = null;
+
+        db = DerbyDAOFactory.getConnection();
+        try {
+            ps = db.prepareStatement("UPDATE Kunden SET Name = ? WHERE ID = ?");
+
+        } catch (SQLException ex) {
+            Logger.getLogger(DerbyKundenDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return 0;
+    }
+    public int updateKunden(ArrayList<Kunde> kunden){
+
+        return 0;
     }
 
     public int updateKunde(Kunde k){
