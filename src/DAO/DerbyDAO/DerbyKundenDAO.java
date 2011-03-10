@@ -39,4 +39,19 @@ public class DerbyKundenDAO implements KundenDAO{
             return null;
         }
     }
+
+    public int updateKunde(Kunde k){
+
+        return 0;
+    }
+
+    public int updateKunden(ArrayList<Kunde> kunden){
+        int rowsUpdated = 0;
+
+        for(Kunde k : kunden){
+            rowsUpdated += updateKunde(k);
+        }
+
+        return rowsUpdated;
+    }
 }

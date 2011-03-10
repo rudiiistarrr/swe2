@@ -12,6 +12,7 @@ package Entities;
 public class Kunde {
     private int ID;
     private String Name;
+    private boolean isChanged = false;
 
     public Kunde(int ID, String Name){
         this.ID = ID;
@@ -37,6 +38,7 @@ public class Kunde {
      */
     public void setName(String Name) {
         this.Name = Name;
+        this.isChanged = true;
     }
 
 
