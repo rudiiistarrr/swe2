@@ -22,7 +22,7 @@ public class DerbyDAOFactory extends DAOFactory {
         Connection conn = null;
 
         try {
-            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/SWE2_1;");
+            conn = DriverManager.getConnection("jdbc:derby://localhost:1527/SWE21;");
         } catch (SQLException ex) {
             Logger.getLogger(DerbyDAOFactory.class.getName()).log(Level.SEVERE, null, ex);
         }
