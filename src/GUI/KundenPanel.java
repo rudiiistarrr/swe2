@@ -14,21 +14,36 @@ import DAO.DAOFactory;
 import DAO.KundenDAO;
 import Entities.Kunde;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
+import javax.swing.RowFilter;
+import javax.swing.RowFilter.Entry;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
  * @author georg
  */
 public class KundenPanel extends javax.swing.JPanel {
+
     dataModel dataModel = new dataModel();
     private ArrayList<Kunde> kunden;
-    
+    RowFilter<Object, Object> filter = new RowFilter<Object, Object>() {
+        public boolean include(Entry entry) {
+            for(int i = 0; i < entry.getValueCount(); i++){
+                if(i % 2 == 0)
+                    return true;
+                else
+                    return false;
+            }
+            return false;
+        }
+    };
+
     private class dataModel extends AbstractTableModel {
+
         public dataModel() {
             DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.DERBY);
             KundenDAO kd = df.getKundenDAO();
@@ -69,13 +84,14 @@ public class KundenPanel extends javax.swing.JPanel {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if(columnIndex == 0)
+            if (columnIndex == 0) {
                 return false;
+            }
             return true;
         }
-        
+
         @Override
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex){
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             Kunde k = kunden.get(rowIndex);
             switch (columnIndex) {
                 case 0:
@@ -88,20 +104,24 @@ public class KundenPanel extends javax.swing.JPanel {
             }
         }
 
-        public void addRow(){
+        public void addRow() {
             int rowIndex = kunden.size();
             kunden.add(new Kunde(-1, ""));
             fireTableChanged(new TableModelEvent(this, rowIndex, rowIndex, -1, TableModelEvent.INSERT));
         }
-        
     }
+
+    dataModel a = new dataModel();
+    TableRowSorter<TableModel>  sorter = new TableRowSorter<TableModel>(a);
 
     /** Creates new form KundenPanel */
     public KundenPanel() {
         initComponents();
         DefaultTableModel x;
-
+        jTable1.setRowSorter(sorter);
     }
+
+
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -115,10 +135,7 @@ public class KundenPanel extends javax.swing.JPanel {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jBtnUndo = new javax.swing.JButton();
-        jBtnSave = new javax.swing.JButton();
-        jBtnDelete = new javax.swing.JButton();
-        jBtnAdd = new javax.swing.JButton();
+        tbfilter = new javax.swing.JTextField();
 
         setLayout(new java.awt.GridBagLayout());
 
@@ -135,94 +152,28 @@ public class KundenPanel extends javax.swing.JPanel {
         gridBagConstraints.weighty = 1.0;
         add(jScrollPane1, gridBagConstraints);
 
-        jBtnUndo.setIcon(new javax.swing.ImageIcon("/home/georg/NetBeansProjects/SWE_2/src/GUI/Undo.png")); // NOI18N
-        jBtnUndo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jBtnUndoActionPerformed(evt);
+        tbfilter.setMinimumSize(new java.awt.Dimension(10, 80));
+        tbfilter.setPreferredSize(new java.awt.Dimension(100, 28));
+        tbfilter.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                tbfilterKeyReleased(evt);
             }
         });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        add(jBtnUndo, gridBagConstraints);
-
-        jBtnSave.setIcon(new javax.swing.ImageIcon("/home/georg/NetBeansProjects/SWE_2/src/GUI/Save.png")); // NOI18N
-        jBtnSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jBtnSaveActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        add(jBtnSave, gridBagConstraints);
-
-        jBtnDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Delete-icon.png"))); // NOI18N
-        jBtnDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jBtnDeleteActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        add(jBtnDelete, gridBagConstraints);
-
-        jBtnAdd.setIcon(new javax.swing.ImageIcon("/home/georg/NetBeansProjects/SWE_2/src/GUI/Add.png")); // NOI18N
-        jBtnAdd.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jBtnAddActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        add(jBtnAdd, gridBagConstraints);
+        add(tbfilter, new java.awt.GridBagConstraints());
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jBtnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnSaveActionPerformed
-        DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.DERBY);
-        KundenDAO kd = df.getKundenDAO();
-        
-        JOptionPane.showMessageDialog(this, "Updated " + kd.updateKunden(kunden)  + " Rows");
-
-        dataModel = new dataModel();
-        jTable1.setModel(dataModel);
-    }//GEN-LAST:event_jBtnSaveActionPerformed
-
-    private void jBtnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnDeleteActionPerformed
-        DAOFactory df = DAOFactory.getDAOFactory(DAOFactory.DERBY);
-        KundenDAO kd = df.getKundenDAO();
-
-        int rowIndex = jTable1.getSelectedRow();
-        if(rowIndex != -1){
-            kd.deleteKunde(kunden.get(rowIndex));
-            kunden.remove(rowIndex);
-        }
-
-        jTable1.updateUI();
-        jTable1.repaint();
-    }//GEN-LAST:event_jBtnDeleteActionPerformed
-
-    private void jBtnUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnUndoActionPerformed
-        dataModel = new dataModel();
-        jTable1.setModel(dataModel);
-    }//GEN-LAST:event_jBtnUndoActionPerformed
-
-    private void jBtnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBtnAddActionPerformed
-        dataModel.addRow();
-    }//GEN-LAST:event_jBtnAddActionPerformed
+    private void tbfilterKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tbfilterKeyReleased
+        String text = tbfilter.getText();
+        Integer size = text.length();
+        if(text.length() == 0)
+             sorter.setRowFilter(null);
+        else
+            sorter.setRowFilter(RowFilter.regexFilter(text,1));
+    }//GEN-LAST:event_tbfilterKeyReleased
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jBtnAdd;
-    private javax.swing.JButton jBtnDelete;
-    private javax.swing.JButton jBtnSave;
-    private javax.swing.JButton jBtnUndo;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTextField tbfilter;
     // End of variables declaration//GEN-END:variables
 }
